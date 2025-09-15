@@ -13,17 +13,46 @@ enum Role {
   ADMIN
 }
 
+enum ServiceCategory {
+  TALLER_AUTORIZADO
+  SEGURIDAD_VIAL
+  RENDIMIENTO_OPTIMO
+  MANTENIMIENTO_PREVENTIVO
+  INSPECCION_RAPIDA
+  SEGURIDAD_Y_VIDA_UTIL
+}
+
+enum Urgency {
+  ALTA
+  MEDIA
+  BAJA
+}
+
+enum AppointmentStatus {
+  PENDIENTE
+  CONFIRMADA
+  EN_PROCESO
+  COMPLETADA
+  CANCELADA
+}
+
+enum MessageRole {
+  USER
+  BOT
+}
+
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
-  passwordHash String
-  fullName     String
+  passwordHash String   @map("password_hash")
+  fullName     String   @map("full_name")
   phone        String?
   role         Role     @default(DRIVER)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
-  vehicles Vehicle[]
+  vehicles     Vehicle[]
+  chatSessions ChatSession[]
 
   @@map("users")
 }
@@ -36,11 +65,132 @@ model Vehicle {
   model     String
   year      Int
   mileageKm Int      @default(0) @map("mileage_km")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner        User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+  chatSessions ChatSession[]
 
   @@index([ownerId])
   @@map("vehicles")
+}
+
+/// Catálogo de servicios ofrecidos por los talleres aliados.
+model Service {
+  id          String          @id @default(uuid())
+  slug        String          @unique
+  name        String
+  description String
+  priceCop    Int             @map("price_cop")
+  durationMin Int             @map("duration_min")
+  category    ServiceCategory
+  icon        String
+  active      Boolean         @default(true)
+  createdAt   DateTime        @default(now()) @map("created_at")
+
+  symptoms     Symptom[]
+  appointments Appointment[]
+  chatSessions ChatSession[]
+
+  @@map("services")
+}
+
+/// Síntoma que el conductor describe y el servicio al que se mapea.
+model Symptom {
+  id        String   @id @default(uuid())
+  slug      String   @unique
+  label     String
+  keywords  String[]
+  urgency   Urgency  @default(MEDIA)
+  serviceId String   @map("service_id")
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+  @@map("symptoms")
+}
+
+model Workshop {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  city      String
+  phone     String
+  latitude  Float
+  longitude Float
+  rating    Float    @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  appointments Appointment[]
+
+  @@map("workshops")
+}
+
+model Appointment {
+  id          String            @id @default(uuid())
+  code        String            @unique
+  vehicleId   String            @map("vehicle_id")
+  serviceId   String            @map("service_id")
+  workshopId  String            @map("workshop_id")
+  scheduledAt DateTime          @map("scheduled_at")
+  status      AppointmentStatus @default(PENDIENTE)
+  totalCop    Int               @map("total_cop")
+  notes       String?
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+
+  vehicle  Vehicle         @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  service  Service         @relation(fields: [serviceId], references: [id])
+  workshop Workshop        @relation(fields: [workshopId], references: [id])
+  events   TrackingEvent[]
+
+  @@index([vehicleId])
+  @@index([scheduledAt])
+  @@map("appointments")
+}
+
+/// Bitácora de seguimiento en tiempo real de una cita.
+model TrackingEvent {
+  id            String            @id @default(uuid())
+  appointmentId String            @map("appointment_id")
+  status        AppointmentStatus
+  message       String
+  createdAt     DateTime          @default(now()) @map("created_at")
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@index([appointmentId])
+  @@map("tracking_events")
+}
+
+model ChatSession {
+  id                   String    @id @default(uuid())
+  userId               String    @map("user_id")
+  vehicleId            String?   @map("vehicle_id")
+  recommendedServiceId String?   @map("recommended_service_id")
+  urgency              Urgency?
+  closedAt             DateTime? @map("closed_at")
+  createdAt            DateTime  @default(now()) @map("created_at")
+
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicle            Vehicle?      @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  recommendedService Service?      @relation(fields: [recommendedServiceId], references: [id])
+  messages           ChatMessage[]
+
+  @@index([userId])
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id        String      @id @default(uuid())
+  sessionId String      @map("session_id")
+  role      MessageRole
+  content   String
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@map("chat_messages")
 }
