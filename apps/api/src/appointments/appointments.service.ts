@@ -7,6 +7,7 @@ import {
 import { AppointmentStatus, Prisma } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
+import { TrackingBus } from '../tracking/tracking.bus';
 import { VehiclesService } from '../vehicles/vehicles.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
@@ -32,6 +33,7 @@ export class AppointmentsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly vehicles: VehiclesService,
+    private readonly bus: TrackingBus,
   ) {}
 
   findAll(userId: string, status?: AppointmentStatus) {
@@ -139,6 +141,14 @@ export class AppointmentsService {
         },
       }),
     ]);
+
+    this.bus.publish({
+      appointmentId: id,
+      code: updated.code,
+      status: updated.status,
+      message: dto.message ?? STATUS_MESSAGE[dto.status],
+      at: new Date().toISOString(),
+    });
 
     return updated;
   }

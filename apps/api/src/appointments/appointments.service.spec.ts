@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing';
 import { AppointmentStatus } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
+import { TrackingBus } from '../tracking/tracking.bus';
 import { VehiclesService } from '../vehicles/vehicles.service';
 import { AppointmentsService } from './appointments.service';
 
@@ -15,6 +16,7 @@ const prisma = {
 };
 
 const vehicles = { findOne: jest.fn() };
+const bus = { publish: jest.fn() };
 
 const NOW = new Date('2025-10-08T08:00:00'); // miércoles
 const dto = {
@@ -36,6 +38,7 @@ describe('AppointmentsService', () => {
         AppointmentsService,
         { provide: PrismaService, useValue: prisma },
         { provide: VehiclesService, useValue: vehicles },
+        { provide: TrackingBus, useValue: bus },
       ],
     }).compile();
 
@@ -131,6 +134,26 @@ describe('AppointmentsService', () => {
           message: 'El taller confirmó tu cita. Te esperamos a la hora acordada.',
         },
       });
+    });
+
+    it('publica la actualización en el bus de seguimiento en tiempo real', async () => {
+      prisma.appointment.findFirst.mockResolvedValue({ id: 'a1', status: 'CONFIRMADA' });
+      prisma.appointment.update.mockResolvedValue({ id: 'a1', code: 'AS-7K3F9Q', status: 'EN_PROCESO' });
+
+      await service.updateStatus('u1', 'a1', { status: AppointmentStatus.EN_PROCESO });
+
+      expect(bus.publish).toHaveBeenCalledWith(
+        expect.objectContaining({ appointmentId: 'a1', code: 'AS-7K3F9Q', status: 'EN_PROCESO' }),
+      );
+    });
+
+    it('no publica nada cuando la transición es inválida', async () => {
+      prisma.appointment.findFirst.mockResolvedValue({ id: 'a1', status: 'PENDIENTE' });
+
+      await expect(
+        service.updateStatus('u1', 'a1', { status: AppointmentStatus.COMPLETADA }),
+      ).rejects.toThrow(ConflictException);
+      expect(bus.publish).not.toHaveBeenCalled();
     });
 
     it('rechaza una transición inválida', async () => {
