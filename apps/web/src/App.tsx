@@ -1,22 +1,30 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
+import { AppShell } from './components/AppShell';
 import { Spinner } from './components/feedback';
+import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { ServiceDetailPage } from './pages/ServiceDetailPage';
+import { ServicesPage } from './pages/ServicesPage';
 import { useAuth } from './state/auth';
 
-function Placeholder() {
+/**
+ * Rutas que requieren sesión. Mientras se revalida el token guardado se muestra
+ * un spinner en vez de redirigir, para no expulsar al usuario en cada recarga.
+ */
+function RequireAuth({ children }: { children: JSX.Element }) {
   const { user, loading } = useAuth();
 
   if (loading) return <Spinner />;
-  if (!user) return <Navigate to="/entrar" replace />;
+  return user ? children : <Navigate to="/entrar" replace />;
+}
 
+function Pendiente({ nombre }: { nombre: string }) {
   return (
-    <div className="mx-auto max-w-app px-5 py-10">
-      <p className="text-sm text-ink-muted">
-        Sesión iniciada como <span className="font-semibold text-ink">{user.fullName}</span>.
-      </p>
+    <div className="card p-8 text-center text-sm text-ink-muted">
+      {nombre} — en construcción.
     </div>
   );
 }
@@ -26,8 +34,26 @@ export function App() {
     <Routes>
       <Route path="/entrar" element={<LoginPage />} />
       <Route path="/registro" element={<RegisterPage />} />
-      <Route index element={<Placeholder />} />
-      <Route path="*" element={<NotFoundPage />} />
+
+      <Route element={<AppShell />}>
+        <Route index element={<HomePage />} />
+        <Route path="servicios" element={<ServicesPage />} />
+        <Route path="servicios/:slug" element={<ServiceDetailPage />} />
+
+        {['agendar', 'citas', 'chat', 'historial', 'perfil'].map((path) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <RequireAuth>
+                <Pendiente nombre={path} />
+              </RequireAuth>
+            }
+          />
+        ))}
+
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
     </Routes>
   );
 }
