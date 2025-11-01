@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { AppShell } from './components/AppShell';
 import { Spinner } from './components/feedback';
+import { ChatPage } from './pages/ChatPage';
 import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
 import { NotFoundPage } from './pages/NotFoundPage';
@@ -40,7 +41,16 @@ export function App() {
         <Route path="servicios" element={<ServicesPage />} />
         <Route path="servicios/:slug" element={<ServiceDetailPage />} />
 
-        {['agendar', 'citas', 'chat', 'historial', 'perfil'].map((path) => (
+        <Route
+          path="chat"
+          element={
+            <RequireAuth>
+              <ChatPage />
+            </RequireAuth>
+          }
+        />
+
+        {['agendar', 'citas', 'historial', 'perfil'].map((path) => (
           <Route
             key={path}
             path={path}
