@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { AppShell } from './components/AppShell';
 import { Spinner } from './components/feedback';
+import { BookingPage } from './pages/BookingPage';
 import { ChatPage } from './pages/ChatPage';
 import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
@@ -42,6 +43,14 @@ export function App() {
         <Route path="servicios/:slug" element={<ServiceDetailPage />} />
 
         <Route
+          path="agendar"
+          element={
+            <RequireAuth>
+              <BookingPage />
+            </RequireAuth>
+          }
+        />
+        <Route
           path="chat"
           element={
             <RequireAuth>
@@ -50,7 +59,7 @@ export function App() {
           }
         />
 
-        {['agendar', 'citas', 'historial', 'perfil'].map((path) => (
+        {['citas', 'historial', 'perfil'].map((path) => (
           <Route
             key={path}
             path={path}
