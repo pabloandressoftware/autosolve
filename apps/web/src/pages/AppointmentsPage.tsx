@@ -39,7 +39,10 @@ export function AppointmentsPage() {
         <ul className="space-y-3">
           {upcoming.map((appointment) => (
             <li key={appointment.id}>
-              <Link to={`/citas/${appointment.id}`} className="card block p-4 transition hover:border-brand-200">
+              <Link
+                to={`/citas/${appointment.id}`}
+                className="card block p-4 transition hover:border-brand-200"
+              >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <h2 className="text-sm font-semibold">{appointment.service.name}</h2>
@@ -63,9 +66,7 @@ export function AppointmentsPage() {
                 </dl>
 
                 <div className="mt-3 flex items-center justify-between border-t border-hairline pt-3">
-                  <span className="font-mono text-xs text-ink-faint">
-                    {appointment.code}
-                  </span>
+                  <span className="font-mono text-xs text-ink-faint">{appointment.code}</span>
                   <span className="text-sm font-bold tracking-tight">
                     {formatCop(appointment.totalCop)}
                   </span>

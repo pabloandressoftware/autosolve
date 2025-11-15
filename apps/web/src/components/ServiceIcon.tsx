@@ -1,12 +1,4 @@
-import {
-  Battery,
-  CircleDot,
-  Droplet,
-  Gauge,
-  Disc3,
-  Wrench,
-  type LucideIcon,
-} from 'lucide-react';
+import { Battery, CircleDot, Droplet, Gauge, Disc3, Wrench, type LucideIcon } from 'lucide-react';
 
 const ICONS: Record<string, LucideIcon> = {
   wrench: Wrench,

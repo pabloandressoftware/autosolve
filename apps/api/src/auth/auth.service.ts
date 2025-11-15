@@ -52,7 +52,12 @@ export class AuthService {
     return this.buildSession(user);
   }
 
-  private buildSession(user: { id: string; email: string; fullName: string; phone: string | null }) {
+  private buildSession(user: {
+    id: string;
+    email: string;
+    fullName: string;
+    phone: string | null;
+  }) {
     return {
       accessToken: this.jwt.sign(
         { sub: user.id, email: user.email },

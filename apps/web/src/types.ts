@@ -1,11 +1,7 @@
 export type Urgency = 'ALTA' | 'MEDIA' | 'BAJA';
 
 export type AppointmentStatus =
-  | 'PENDIENTE'
-  | 'CONFIRMADA'
-  | 'EN_PROCESO'
-  | 'COMPLETADA'
-  | 'CANCELADA';
+  'PENDIENTE' | 'CONFIRMADA' | 'EN_PROCESO' | 'COMPLETADA' | 'CANCELADA';
 
 export type ServiceCategory =
   | 'TALLER_AUTORIZADO'

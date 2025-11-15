@@ -107,7 +107,9 @@ export function RegisterPage() {
             value={form.password}
             onChange={update('password')}
           />
-          <p className="mt-1.5 text-xs text-ink-faint">Mínimo 8 caracteres, con letras y números.</p>
+          <p className="mt-1.5 text-xs text-ink-faint">
+            Mínimo 8 caracteres, con letras y números.
+          </p>
         </div>
 
         {error && (

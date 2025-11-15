@@ -19,7 +19,8 @@ export function PublicTrackingPage() {
   const [draft, setDraft] = useState('');
 
   const { data, error, loading, reload } = useAsync<PublicTracking | null>(
-    (signal) => (code ? api<PublicTracking>(`/tracking/${code}`, { signal }) : Promise.resolve(null)),
+    (signal) =>
+      code ? api<PublicTracking>(`/tracking/${code}`, { signal }) : Promise.resolve(null),
     [code],
   );
 

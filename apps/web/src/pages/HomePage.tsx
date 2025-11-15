@@ -75,7 +75,9 @@ export function HomePage() {
                 <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-50 text-brand-600">
                   <Icon className="h-5 w-5" aria-hidden />
                 </span>
-                <span className="text-[11px] font-medium leading-tight text-ink-muted">{label}</span>
+                <span className="text-[11px] font-medium leading-tight text-ink-muted">
+                  {label}
+                </span>
               </Link>
             </li>
           ))}

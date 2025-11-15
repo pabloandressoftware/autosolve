@@ -67,7 +67,9 @@ describe('api', () => {
   });
 
   it('devuelve undefined en un 204 sin intentar leer JSON', async () => {
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 204, json: () => Promise.reject() });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, status: 204, json: () => Promise.reject() });
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(api('/vehicles/1')).resolves.toBeUndefined();

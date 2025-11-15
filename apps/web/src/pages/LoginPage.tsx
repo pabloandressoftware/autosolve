@@ -87,7 +87,10 @@ export function LoginPage() {
       </div>
 
       <div className="space-y-4 text-center">
-        <Link to="/servicios" className="text-sm font-medium text-ink-muted underline-offset-4 hover:underline">
+        <Link
+          to="/servicios"
+          className="text-sm font-medium text-ink-muted underline-offset-4 hover:underline"
+        >
           Explorar sin cuenta
         </Link>
 

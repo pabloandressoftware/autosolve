@@ -113,7 +113,9 @@ describe('ChatbotService', () => {
         serviceId: 'srv-frenos',
       },
     ]);
-    prisma.symptom.findMany.mockResolvedValueOnce([{ slug: 'chirrido-al-frenar', label: 'Chirrido' }]);
+    prisma.symptom.findMany.mockResolvedValueOnce([
+      { slug: 'chirrido-al-frenar', label: 'Chirrido' },
+    ]);
 
     const result = await service.sendMessage('u1', 's1', { content: 'cual es el horario' });
 

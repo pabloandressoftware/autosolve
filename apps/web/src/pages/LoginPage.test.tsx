@@ -31,7 +31,10 @@ describe('LoginPage', () => {
   it('envía las credenciales a la API', async () => {
     const fetchMock = mockFetch({
       status: 200,
-      body: { accessToken: 'token', user: { id: '1', email: 'a@b.co', fullName: 'A', phone: null } },
+      body: {
+        accessToken: 'token',
+        user: { id: '1', email: 'a@b.co', fullName: 'A', phone: null },
+      },
     });
 
     renderApp(<LoginPage />);

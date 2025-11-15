@@ -16,7 +16,8 @@ export function HistoryPage() {
   if (loading) return <Spinner />;
   if (error) return <ErrorState message={error} onRetry={reload} />;
 
-  const total = data?.filter((a) => a.status === 'COMPLETADA').reduce((sum, a) => sum + a.totalCop, 0) ?? 0;
+  const total =
+    data?.filter((a) => a.status === 'COMPLETADA').reduce((sum, a) => sum + a.totalCop, 0) ?? 0;
 
   return (
     <div className="space-y-5">
@@ -30,7 +31,9 @@ export function HistoryPage() {
       ) : (
         <>
           <div className="card p-4">
-            <p className="text-xs uppercase tracking-wide text-ink-faint">Invertido en mantenimiento</p>
+            <p className="text-xs uppercase tracking-wide text-ink-faint">
+              Invertido en mantenimiento
+            </p>
             <p className="mt-1 text-2xl font-bold tracking-tight">{formatCop(total)}</p>
           </div>
 
@@ -47,7 +50,9 @@ export function HistoryPage() {
 
                   <div className="shrink-0 text-right">
                     <StatusPill status={appointment.status} />
-                    <p className="mt-1.5 text-sm font-semibold">{formatCop(appointment.totalCop)}</p>
+                    <p className="mt-1.5 text-sm font-semibold">
+                      {formatCop(appointment.totalCop)}
+                    </p>
                   </div>
                 </Link>
               </li>

@@ -11,7 +11,10 @@ interface AsyncState<T> {
  * Carga datos con `AbortController` para no escribir estado sobre un componente
  * ya desmontado — pasa fácil al navegar rápido entre pestañas del menú inferior.
  */
-export function useAsync<T>(loader: (signal: AbortSignal) => Promise<T>, deps: unknown[]): AsyncState<T> {
+export function useAsync<T>(
+  loader: (signal: AbortSignal) => Promise<T>,
+  deps: unknown[],
+): AsyncState<T> {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
