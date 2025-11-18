@@ -1,0 +1,163 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  calidad:
+    name: Lint y formato
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate --schema apps/api/prisma/schema.prisma
+      - run: npm run format:check
+      - run: npm run lint
+
+  api:
+    name: Pruebas de la API
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: autosolve
+          POSTGRES_PASSWORD: autosolve
+          POSTGRES_DB: autosolve_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U autosolve"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://autosolve:autosolve@localhost:5432/autosolve_test?schema=public
+      JWT_SECRET: secreto-solo-para-ci
+      JWT_EXPIRES_IN: 1h
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npx prisma migrate deploy --schema apps/api/prisma/schema.prisma
+      - run: npx ts-node apps/api/prisma/seed.ts
+      - name: Pruebas unitarias
+        run: npm run test --workspace @autosolve/api
+      - name: Pruebas e2e de la API
+        run: npm run test:e2e --workspace @autosolve/api
+      - run: npm run build --workspace @autosolve/api
+
+  web:
+    name: Pruebas de la web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run test --workspace @autosolve/web
+      - run: npm run build --workspace @autosolve/web
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: apps/web/dist
+          retention-days: 7
+
+  e2e:
+    name: Recorrido completo (Playwright)
+    runs-on: ubuntu-latest
+    needs: [api, web]
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: autosolve
+          POSTGRES_PASSWORD: autosolve
+          POSTGRES_DB: autosolve_e2e
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U autosolve"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://autosolve:autosolve@localhost:5432/autosolve_e2e?schema=public
+      JWT_SECRET: secreto-solo-para-ci
+      CORS_ORIGIN: http://localhost:4173
+      E2E_BASE_URL: http://localhost:4173
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+
+      - name: Preparar la base
+        run: |
+          npx prisma migrate deploy --schema apps/api/prisma/schema.prisma
+          npx ts-node apps/api/prisma/seed.ts
+
+      - name: Levantar la API
+        run: |
+          npm run build --workspace @autosolve/api
+          node apps/api/dist/main.js &
+          npx wait-on http://localhost:3000/api/health --timeout 60000
+
+      - name: Levantar la web
+        run: |
+          npm run build --workspace @autosolve/web
+          npx vite preview --root apps/web --port 4173 &
+          npx wait-on http://localhost:4173 --timeout 60000
+
+      - run: npm run test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
+
+  docker:
+    name: Imágenes Docker
+    runs-on: ubuntu-latest
+    needs: [api, web]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Construir imagen de la API
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Construir imagen de la web
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
