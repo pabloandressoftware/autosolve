@@ -7,6 +7,7 @@ import { ChatbotModule } from './chatbot/chatbot.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ServicesModule } from './services/services.module';
+import { TrackingModule } from './tracking/tracking.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
 import { WorkshopsModule } from './workshops/workshops.module';
 
@@ -17,6 +18,7 @@ import { WorkshopsModule } from './workshops/workshops.module';
     AuthModule,
     VehiclesModule,
     ServicesModule,
+    TrackingModule,
     AppointmentsModule,
     ChatbotModule,
     WorkshopsModule,
