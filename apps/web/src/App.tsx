@@ -2,11 +2,15 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { AppShell } from './components/AppShell';
 import { Spinner } from './components/feedback';
+import { AppointmentDetailPage } from './pages/AppointmentDetailPage';
+import { AppointmentsPage } from './pages/AppointmentsPage';
 import { BookingPage } from './pages/BookingPage';
 import { ChatPage } from './pages/ChatPage';
+import { HistoryPage } from './pages/HistoryPage';
 import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { PublicTrackingPage } from './pages/PublicTrackingPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ServiceDetailPage } from './pages/ServiceDetailPage';
 import { ServicesPage } from './pages/ServicesPage';
@@ -36,6 +40,8 @@ export function App() {
     <Routes>
       <Route path="/entrar" element={<LoginPage />} />
       <Route path="/registro" element={<RegisterPage />} />
+      <Route path="/seguimiento" element={<PublicTrackingPage />} />
+      <Route path="/seguimiento/:code" element={<PublicTrackingPage />} />
 
       <Route element={<AppShell />}>
         <Route index element={<HomePage />} />
@@ -51,6 +57,22 @@ export function App() {
           }
         />
         <Route
+          path="citas"
+          element={
+            <RequireAuth>
+              <AppointmentsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="citas/:id"
+          element={
+            <RequireAuth>
+              <AppointmentDetailPage />
+            </RequireAuth>
+          }
+        />
+        <Route
           path="chat"
           element={
             <RequireAuth>
@@ -59,7 +81,16 @@ export function App() {
           }
         />
 
-        {['citas', 'historial', 'perfil'].map((path) => (
+        <Route
+          path="historial"
+          element={
+            <RequireAuth>
+              <HistoryPage />
+            </RequireAuth>
+          }
+        />
+
+        {['perfil'].map((path) => (
           <Route
             key={path}
             path={path}
