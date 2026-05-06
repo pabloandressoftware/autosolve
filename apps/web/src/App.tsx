@@ -10,6 +10,7 @@ import { HistoryPage } from './pages/HistoryPage';
 import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { ProfilePage } from './pages/ProfilePage';
 import { PublicTrackingPage } from './pages/PublicTrackingPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ServiceDetailPage } from './pages/ServiceDetailPage';
@@ -25,14 +26,6 @@ function RequireAuth({ children }: { children: JSX.Element }) {
 
   if (loading) return <Spinner />;
   return user ? children : <Navigate to="/entrar" replace />;
-}
-
-function Pendiente({ nombre }: { nombre: string }) {
-  return (
-    <div className="card p-8 text-center text-sm text-ink-muted">
-      {nombre} — en construcción.
-    </div>
-  );
 }
 
 export function App() {
@@ -80,7 +73,6 @@ export function App() {
             </RequireAuth>
           }
         />
-
         <Route
           path="historial"
           element={
@@ -89,18 +81,14 @@ export function App() {
             </RequireAuth>
           }
         />
-
-        {['perfil'].map((path) => (
-          <Route
-            key={path}
-            path={path}
-            element={
-              <RequireAuth>
-                <Pendiente nombre={path} />
-              </RequireAuth>
-            }
-          />
-        ))}
+        <Route
+          path="perfil"
+          element={
+            <RequireAuth>
+              <ProfilePage />
+            </RequireAuth>
+          }
+        />
 
         <Route path="*" element={<NotFoundPage />} />
       </Route>
