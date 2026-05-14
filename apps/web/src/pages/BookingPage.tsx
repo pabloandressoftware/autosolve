@@ -80,9 +80,7 @@ export function BookingPage() {
   if (!data) return null;
 
   if (data.vehicles.length === 0) {
-    return (
-      <ErrorState message="Primero registra un vehículo en tu perfil para poder agendar." />
-    );
+    return <ErrorState message="Primero registra un vehículo en tu perfil para poder agendar." />;
   }
 
   return (
@@ -242,7 +240,11 @@ export function BookingPage() {
       )}
 
       <button type="submit" className="btn-primary w-full" disabled={!ready || submitting}>
-        {submitting ? 'Agendando…' : service ? `Confirmar · ${formatCop(service.priceCop)}` : 'Confirmar'}
+        {submitting
+          ? 'Agendando…'
+          : service
+            ? `Confirmar · ${formatCop(service.priceCop)}`
+            : 'Confirmar'}
       </button>
     </form>
   );

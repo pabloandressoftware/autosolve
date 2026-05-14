@@ -4,7 +4,13 @@ import { Link, useParams } from 'react-router-dom';
 import { ServiceIcon } from '../components/ServiceIcon';
 import { ErrorState, Spinner } from '../components/feedback';
 import { api } from '../lib/api';
-import { CATEGORY_LABEL, URGENCY_LABEL, URGENCY_TONE, formatCop, formatDuration } from '../lib/format';
+import {
+  CATEGORY_LABEL,
+  URGENCY_LABEL,
+  URGENCY_TONE,
+  formatCop,
+  formatDuration,
+} from '../lib/format';
 import { useAsync } from '../lib/useAsync';
 import type { Service, Urgency } from '../types';
 

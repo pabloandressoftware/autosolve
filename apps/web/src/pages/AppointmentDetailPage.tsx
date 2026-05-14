@@ -70,7 +70,10 @@ export function AppointmentDetailPage() {
 
       <div className="card divide-y divide-hairline">
         <Row label="Fecha" value={formatDateTime(data.scheduledAt)} />
-        <Row label="Vehículo" value={`${data.vehicle.brand} ${data.vehicle.model} · ${data.vehicle.plate}`} />
+        <Row
+          label="Vehículo"
+          value={`${data.vehicle.brand} ${data.vehicle.model} · ${data.vehicle.plate}`}
+        />
         <Row label="Total" value={formatCop(data.totalCop)} />
       </div>
 

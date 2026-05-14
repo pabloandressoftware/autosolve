@@ -14,8 +14,16 @@ const appointment = {
   workshop: { name: 'Energitéca Centro', address: 'Calle 13 # 4-52', phone: '+57 602 555 0110' },
   vehicle: { brand: 'Renault', model: 'Logan', plate: 'ABC123' },
   events: [
-    { status: 'PENDIENTE', message: 'Recibimos tu solicitud.', createdAt: new Date('2025-10-14T10:00:00Z') },
-    { status: 'EN_PROCESO', message: 'El servicio comenzó.', createdAt: new Date('2025-10-15T09:05:00Z') },
+    {
+      status: 'PENDIENTE',
+      message: 'Recibimos tu solicitud.',
+      createdAt: new Date('2025-10-14T10:00:00Z'),
+    },
+    {
+      status: 'EN_PROCESO',
+      message: 'El servicio comenzó.',
+      createdAt: new Date('2025-10-15T09:05:00Z'),
+    },
   ],
 };
 

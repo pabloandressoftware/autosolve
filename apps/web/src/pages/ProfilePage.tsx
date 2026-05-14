@@ -94,7 +94,8 @@ export function ProfilePage() {
               <li key={vehicle.id} className="flex items-center gap-3 p-4">
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold">
-                    {vehicle.brand} {vehicle.model} <span className="text-ink-faint">{vehicle.year}</span>
+                    {vehicle.brand} {vehicle.model}{' '}
+                    <span className="text-ink-faint">{vehicle.year}</span>
                   </p>
                   <p className="mt-0.5 font-mono text-xs tracking-wider text-ink-muted">
                     {vehicle.plate} · {vehicle.mileageKm.toLocaleString('es-CO')} km
@@ -135,13 +136,25 @@ export function ProfilePage() {
                 <label className="label" htmlFor="brand">
                   Marca
                 </label>
-                <input id="brand" className="field" required value={form.brand} onChange={update('brand')} />
+                <input
+                  id="brand"
+                  className="field"
+                  required
+                  value={form.brand}
+                  onChange={update('brand')}
+                />
               </div>
               <div>
                 <label className="label" htmlFor="model">
                   Modelo
                 </label>
-                <input id="model" className="field" required value={form.model} onChange={update('model')} />
+                <input
+                  id="model"
+                  className="field"
+                  required
+                  value={form.model}
+                  onChange={update('model')}
+                />
               </div>
             </div>
 

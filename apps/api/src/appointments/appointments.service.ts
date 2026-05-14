@@ -122,9 +122,7 @@ export class AppointmentsService {
     const appointment = await this.findOne(userId, id);
 
     if (!ALLOWED_TRANSITIONS[appointment.status].includes(dto.status)) {
-      throw new ConflictException(
-        `No se puede pasar de ${appointment.status} a ${dto.status}`,
-      );
+      throw new ConflictException(`No se puede pasar de ${appointment.status} a ${dto.status}`);
     }
 
     const [updated] = await this.prisma.$transaction([

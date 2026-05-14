@@ -44,7 +44,12 @@ describe('AppointmentsService', () => {
 
     service = moduleRef.get(AppointmentsService);
     vehicles.findOne.mockResolvedValue({ id: 'v1' });
-    prisma.service.findUnique.mockResolvedValue({ id: 's1', active: true, durationMin: 60, priceCop: 120000 });
+    prisma.service.findUnique.mockResolvedValue({
+      id: 's1',
+      active: true,
+      durationMin: 60,
+      priceCop: 120000,
+    });
     prisma.workshop.findUnique.mockResolvedValue({ id: 'w1' });
     prisma.appointment.findMany.mockResolvedValue([]);
     prisma.appointment.create.mockImplementation(({ data }: { data: unknown }) =>
@@ -114,7 +119,12 @@ describe('AppointmentsService', () => {
     });
 
     it('rechaza un servicio inactivo', async () => {
-      prisma.service.findUnique.mockResolvedValue({ id: 's1', active: false, durationMin: 60, priceCop: 1 });
+      prisma.service.findUnique.mockResolvedValue({
+        id: 's1',
+        active: false,
+        durationMin: 60,
+        priceCop: 1,
+      });
 
       await expect(service.create('u1', dto, NOW)).rejects.toThrow(NotFoundException);
     });
@@ -138,7 +148,11 @@ describe('AppointmentsService', () => {
 
     it('publica la actualización en el bus de seguimiento en tiempo real', async () => {
       prisma.appointment.findFirst.mockResolvedValue({ id: 'a1', status: 'CONFIRMADA' });
-      prisma.appointment.update.mockResolvedValue({ id: 'a1', code: 'AS-7K3F9Q', status: 'EN_PROCESO' });
+      prisma.appointment.update.mockResolvedValue({
+        id: 'a1',
+        code: 'AS-7K3F9Q',
+        status: 'EN_PROCESO',
+      });
 
       await service.updateStatus('u1', 'a1', { status: AppointmentStatus.EN_PROCESO });
 

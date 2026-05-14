@@ -17,7 +17,8 @@ export function ServicesPage() {
   useEffect(() => setDraft(query), [query]);
 
   const { data, error, loading, reload } = useAsync<Service[]>(
-    (signal) => api<Service[]>(`/services${query ? `?q=${encodeURIComponent(query)}` : ''}`, { signal }),
+    (signal) =>
+      api<Service[]>(`/services${query ? `?q=${encodeURIComponent(query)}` : ''}`, { signal }),
     [query],
   );
 

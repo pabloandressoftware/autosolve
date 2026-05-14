@@ -73,9 +73,10 @@ describe('ChatPage', () => {
     expect(await screen.findByText('Revisión de Frenos')).toBeInTheDocument();
     expect(screen.getByText('$120.000 · 1 h')).toBeInTheDocument();
     expect(screen.getByText('Urgente')).toBeInTheDocument();
-    expect(
-      screen.getByRole('link', { name: 'Agendar Revisión de Frenos' }),
-    ).toHaveAttribute('href', '/agendar?servicio=revision-de-frenos');
+    expect(screen.getByRole('link', { name: 'Agendar Revisión de Frenos' })).toHaveAttribute(
+      'href',
+      '/agendar?servicio=revision-de-frenos',
+    );
   });
 
   it('revierte el mensaje si el envío falla y lo devuelve al campo de texto', async () => {
