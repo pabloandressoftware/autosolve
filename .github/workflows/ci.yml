@@ -127,7 +127,7 @@ jobs:
       - name: Levantar la web
         run: |
           npm run build --workspace @autosolve/web
-          npx vite preview --root apps/web --port 4173 &
+          npm run preview --workspace @autosolve/web -- --port 4173 --strictPort &
           npx wait-on http://localhost:4173 --timeout 60000
 
       - run: npm run test:e2e

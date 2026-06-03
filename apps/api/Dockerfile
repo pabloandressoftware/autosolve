@@ -8,7 +8,9 @@ COPY package.json package-lock.json ./
 COPY apps/api/package.json apps/api/
 COPY apps/web/package.json apps/web/
 # El workspace de web no se necesita para construir la API.
-RUN npm ci --workspace @autosolve/api --include-workspace-root
+# --ignore-scripts: en esta capa todavía no está el schema, y el cliente de
+# Prisma se genera explícitamente en la etapa `build`.
+RUN npm ci --ignore-scripts --workspace @autosolve/api --include-workspace-root
 
 FROM deps AS build
 WORKDIR /repo
