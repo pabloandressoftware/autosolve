@@ -23,8 +23,9 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
+      # `npm ci` dispara el postinstall de la API, que genera el cliente de
+      # Prisma; sin él ESLint no resuelve los tipos del esquema.
       - run: npm ci
-      - run: npx prisma generate --schema apps/api/prisma/schema.prisma
       - run: npm run format:check
       - run: npm run lint
 

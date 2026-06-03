@@ -4,6 +4,7 @@
   "private": true,
   "description": "API REST de AutoSolve",
   "scripts": {
+    "postinstall": "prisma generate",
     "build": "nest build",
     "dev": "nest start --watch",
     "start": "node dist/main",
