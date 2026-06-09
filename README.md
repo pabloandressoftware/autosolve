@@ -9,6 +9,8 @@ aliado y sigue el servicio en tiempo real.
 
 Proyecto del **Equipo Morado** — Universidad Icesi.
 
+**[▶ Ver la app en vivo](https://autosolve-six.vercel.app)** · [API](https://autosolve-six.vercel.app/api/health)
+
 [![CI](https://github.com/pabloandressoftware/autosolve/actions/workflows/ci.yml/badge.svg)](https://github.com/pabloandressoftware/autosolve/actions/workflows/ci.yml)
 
 </div>
@@ -132,11 +134,17 @@ npm run test:e2e                           # recorrido completo con Playwright
 
 ## Despliegue
 
-El repositorio trae dos caminos listos:
+**En producción:** https://autosolve-six.vercel.app
 
-1. **Render** — [`render.yaml`](render.yaml) define base de datos, API y web
+El repositorio trae tres caminos listos:
+
+1. **Vercel** — `vercel.json` construye la web como estática y monta la API
+   como función serverless en `api/[...path].js`. Necesita `DATABASE_URL` y
+   `JWT_SECRET` en las variables del proyecto.
+
+2. **Render** — [`render.yaml`](render.yaml) define base de datos, API y web
    estática. Se conecta el repo y Render lee el blueprint.
-2. **Contenedores** — el workflow [`deploy.yml`](.github/workflows/deploy.yml)
+3. **Contenedores** — el workflow [`deploy.yml`](.github/workflows/deploy.yml)
    publica las imágenes en GHCR en cada push a `main` y dispara los deploy hooks
    si están configurados como variables del repositorio
    (`RENDER_API_DEPLOY_HOOK`, `RENDER_WEB_DEPLOY_HOOK`).
@@ -150,6 +158,14 @@ El repositorio trae dos caminos listos:
 | `JWT_EXPIRES_IN` | no | Vigencia del token (`7d` por defecto). |
 | `PORT` | no | Puerto del servidor (`3000`). |
 | `CORS_ORIGIN` | no | Orígenes permitidos, separados por coma. |
+
+### Limitación conocida en Vercel
+
+El seguimiento en vivo usa SSE. En funciones serverless la conexión se
+corta al llegar al límite de duración; `EventSource` reconecta solo, así
+que la línea de tiempo sigue actualizándose, pero el indicador «En vivo»
+parpadea. En el despliegue con contenedores (Render o Docker) no ocurre,
+porque el proceso es de larga vida.
 
 ## Equipo Morado
 
