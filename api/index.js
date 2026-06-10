@@ -17,6 +17,7 @@ const {
   PrismaExceptionFilter,
 } = require('../apps/api/dist/common/filters/prisma-exception.filter');
 const { resolveRequestUrl } = require('../apps/api/dist/common/resolve-request-url');
+const { setupSwagger } = require('../apps/api/dist/swagger');
 
 /**
  * La instancia se guarda entre invocaciones: mientras el contenedor sigue
@@ -42,6 +43,8 @@ async function bootstrap() {
     new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: true }),
   );
   app.useGlobalFilters(new PrismaExceptionFilter());
+
+  setupSwagger(app);
 
   await app.init();
 

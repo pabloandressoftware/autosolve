@@ -50,6 +50,27 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  vercel:
+    name: Desplegar en Vercel
+    runs-on: ubuntu-latest
+    # Se salta si no hay token configurado, para que un fork no rompa el
+    # pipeline. Alternativa sin secreto: instalar la Vercel GitHub App en la
+    # cuenta dueña del repositorio y dejar que Vercel despliegue por su cuenta.
+    if: ${{ secrets.VERCEL_TOKEN != '' }}
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Desplegar a producción
+        run: npx vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+
   desplegar:
     name: Desplegar en Render
     runs-on: ubuntu-latest

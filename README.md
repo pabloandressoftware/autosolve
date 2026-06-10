@@ -9,7 +9,7 @@ aliado y sigue el servicio en tiempo real.
 
 Proyecto del **Equipo Morado** — Universidad Icesi.
 
-**[▶ Ver la app en vivo](https://autosolve-six.vercel.app)** · [API](https://autosolve-six.vercel.app/api/health)
+**[▶ Ver la app en vivo](https://autosolve-six.vercel.app)** · [API](https://autosolve-six.vercel.app/api/health) · [Documentación OpenAPI](https://autosolve-six.vercel.app/api/docs)
 
 [![CI](https://github.com/pabloandressoftware/autosolve/actions/workflows/ci.yml/badge.svg)](https://github.com/pabloandressoftware/autosolve/actions/workflows/ci.yml)
 
@@ -100,7 +100,8 @@ npm run dev --workspace @autosolve/web    # http://localhost:5173
 ```
 
 La documentación interactiva de la API queda en
-**http://localhost:3000/api/docs**.
+**http://localhost:3000/api/docs** (en producción,
+[/api/docs](https://autosolve-six.vercel.app/api/docs)).
 
 **Usuario de prueba:** `demo@autosolve.co` / `Demo1234!`
 
@@ -138,9 +139,17 @@ npm run test:e2e                           # recorrido completo con Playwright
 
 El repositorio trae tres caminos listos:
 
-1. **Vercel** — `vercel.json` construye la web como estática y monta la API
-   como función serverless en `api/[...path].js`. Necesita `DATABASE_URL` y
-   `JWT_SECRET` en las variables del proyecto.
+1. **Vercel** (el despliegue actual) — `vercel.json` construye la web como
+   estática y monta la API como función serverless en `api/index.js`, con
+   PostgreSQL en Neon. Necesita `DATABASE_URL` (pooler), `DIRECT_URL`
+   (conexión directa, para migraciones) y `JWT_SECRET`.
+
+   Dos detalles que no son obvios: las funciones de Vercel no enrutan
+   sub-rutas por sí solas, así que un rewrite manda todo `/api/*` a una única
+   función con la ruta original en el query string; y la API se precompila
+   con `tsc` porque el bundler de Vercel usa esbuild, que no soporta
+   `emitDecoratorMetadata`, del que depende la inyección de dependencias de
+   NestJS.
 
 2. **Render** — [`render.yaml`](render.yaml) define base de datos, API y web
    estática. Se conecta el repo y Render lee el blueprint.
