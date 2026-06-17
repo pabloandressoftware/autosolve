@@ -38,6 +38,17 @@ async function registrarVehiculo(page: Page, plate: string) {
 }
 
 test.describe('AutoSolve', () => {
+  test('quien llega por primera vez aterriza en la bienvenida, no en el inicio', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    await expect(page).toHaveURL(/\/entrar$/);
+    await expect(page.getByText('AutoSolve')).toBeVisible();
+    // No debe asomar el layout de la app antes de redirigir.
+    await expect(page.getByRole('navigation', { name: 'Navegación principal' })).toHaveCount(0);
+  });
+
   test('la pantalla de bienvenida muestra la marca y ambas acciones', async ({ page }) => {
     await page.goto('/entrar');
 
@@ -135,9 +146,18 @@ test.describe('AutoSolve', () => {
   });
 
   test('las rutas privadas redirigen al inicio de sesión', async ({ page }) => {
-    await page.goto('/citas');
+    for (const ruta of ['/', '/citas', '/chat', '/historial', '/perfil', '/agendar']) {
+      await page.goto(ruta);
+      await expect(page).toHaveURL(/\/entrar$/);
+    }
+  });
 
-    await expect(page).toHaveURL(/\/entrar/);
+  test('tras iniciar sesión, la raíz sí muestra el inicio', async ({ page }) => {
+    await registrarse(page, nuevaCuenta());
+
+    await page.goto('/');
+    await expect(page.getByRole('heading', { name: /Hola/ })).toBeVisible();
+    await expect(page.getByRole('navigation', { name: 'Navegación principal' })).toBeVisible();
   });
 });
 

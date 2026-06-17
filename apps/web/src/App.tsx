@@ -18,14 +18,21 @@ import { ServicesPage } from './pages/ServicesPage';
 import { useAuth } from './state/auth';
 
 /**
- * Rutas que requieren sesión. Mientras se revalida el token guardado se muestra
- * un spinner en vez de redirigir, para no expulsar al usuario en cada recarga.
+ * Envuelve al layout completo, no a cada pantalla: así el visitante sin sesión
+ * nunca llega a ver un fotograma del encabezado y el menú antes de que la
+ * redirección ocurra.
+ *
+ * Mientras se revalida el token guardado se muestra un spinner en vez de
+ * redirigir, para no expulsar al usuario en cada recarga.
  */
-function RequireAuth({ children }: { children: JSX.Element }) {
+function PrivateLayout() {
   const { user, loading } = useAuth();
 
-  if (loading) return <Spinner />;
-  return user ? children : <Navigate to="/entrar" replace />;
+  if (loading) {
+    return <Spinner />;
+  }
+
+  return user ? <AppShell /> : <Navigate to="/entrar" replace />;
 }
 
 export function App() {
@@ -36,60 +43,25 @@ export function App() {
       <Route path="/seguimiento" element={<PublicTrackingPage />} />
       <Route path="/seguimiento/:code" element={<PublicTrackingPage />} />
 
-      <Route element={<AppShell />}>
+      {/*
+        La raíz exige sesión, así que quien llega por primera vez ve la
+        pantalla de bienvenida — igual que en el prototipo, donde la primera
+        pantalla es la de marca con «Explorar sin cuenta».
+      */}
+      <Route element={<PrivateLayout />}>
         <Route index element={<HomePage />} />
+        <Route path="agendar" element={<BookingPage />} />
+        <Route path="citas" element={<AppointmentsPage />} />
+        <Route path="citas/:id" element={<AppointmentDetailPage />} />
+        <Route path="chat" element={<ChatPage />} />
+        <Route path="historial" element={<HistoryPage />} />
+        <Route path="perfil" element={<ProfilePage />} />
+      </Route>
+
+      {/* Pantallas que el prototipo permite ver «sin cuenta». */}
+      <Route element={<AppShell />}>
         <Route path="servicios" element={<ServicesPage />} />
         <Route path="servicios/:slug" element={<ServiceDetailPage />} />
-
-        <Route
-          path="agendar"
-          element={
-            <RequireAuth>
-              <BookingPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="citas"
-          element={
-            <RequireAuth>
-              <AppointmentsPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="citas/:id"
-          element={
-            <RequireAuth>
-              <AppointmentDetailPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="chat"
-          element={
-            <RequireAuth>
-              <ChatPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="historial"
-          element={
-            <RequireAuth>
-              <HistoryPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="perfil"
-          element={
-            <RequireAuth>
-              <ProfilePage />
-            </RequireAuth>
-          }
-        />
-
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
