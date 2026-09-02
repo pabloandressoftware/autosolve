@@ -30,7 +30,9 @@ USER node
 COPY --chown=node:node --from=build /repo/package.json /repo/package-lock.json ./
 COPY --chown=node:node --from=build /repo/apps/api/package.json apps/api/
 COPY --chown=node:node --from=build /repo/apps/web/package.json apps/web/
-RUN npm ci --omit=dev --workspace @autosolve/api --include-workspace-root \
+# --ignore-scripts: el postinstall de la API ejecuta `prisma generate`, que
+# aquí no tiene schema a mano; el cliente se copia ya generado desde `build`.
+RUN npm ci --omit=dev --ignore-scripts --workspace @autosolve/api --include-workspace-root \
  && npm cache clean --force
 
 # Cliente de Prisma ya generado en la etapa de build.
