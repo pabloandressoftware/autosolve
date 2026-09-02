@@ -16,6 +16,7 @@ const { AppModule } = require('../apps/api/dist/app.module');
 const {
   PrismaExceptionFilter,
 } = require('../apps/api/dist/common/filters/prisma-exception.filter');
+const { resolveRequestUrl } = require('../apps/api/dist/common/resolve-request-url');
 
 /**
  * La instancia se guarda entre invocaciones: mientras el contenedor sigue
@@ -50,5 +51,15 @@ async function bootstrap() {
 
 module.exports = async (req, res) => {
   const server = await bootstrap();
+
+  // El rewrite de vercel.json manda todo /api/* a esta función y adjunta la
+  // ruta original en el query string. Se restaura antes de que Nest la vea.
+  //
+  // Hay que limpiar en dos sitios: el runtime de Vercel deja `query` como
+  // propiedad propia del request, y esa propiedad tapa el getter que Express
+  // define en el prototipo, así que reescribir solo la URL no surte efecto.
+  req.url = resolveRequestUrl(req.url);
+  delete req.query;
+
   return server(req, res);
 };

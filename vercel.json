@@ -5,14 +5,18 @@
   "outputDirectory": "apps/web/dist",
   "framework": null,
   "functions": {
-    "api/[...path].js": {
+    "api/index.js": {
       "maxDuration": 30,
       "includeFiles": "{apps/api/dist/**,node_modules/.prisma/client/**}"
     }
   },
   "rewrites": [
     {
-      "source": "/((?!api/).*)",
+      "source": "/api/(.*)",
+      "destination": "/api?__nestPath=$1"
+    },
+    {
+      "source": "/((?!api).*)",
       "destination": "/index.html"
     }
   ],
