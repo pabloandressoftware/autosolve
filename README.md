@@ -144,6 +144,11 @@ El repositorio trae tres caminos listos:
    PostgreSQL en Neon. Necesita `DATABASE_URL` (pooler), `DIRECT_URL`
    (conexión directa, para migraciones) y `JWT_SECRET`.
 
+   Cada push a `main` despliega solo, desde el job `vercel` de
+   [`deploy.yml`](.github/workflows/deploy.yml). Necesita el secreto
+   `VERCEL_TOKEN` y las variables `VERCEL_ORG_ID` y `VERCEL_PROJECT_ID` en el
+   repositorio; sin el secreto el paso se salta y el pipeline sigue en verde.
+
    Dos detalles que no son obvios: las funciones de Vercel no enrutan
    sub-rutas por sí solas, así que un rewrite manda todo `/api/*` a una única
    función con la ruta original en el query string; y la API se precompila
