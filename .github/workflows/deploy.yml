@@ -53,10 +53,6 @@ jobs:
   vercel:
     name: Desplegar en Vercel
     runs-on: ubuntu-latest
-    # Se salta si no hay token configurado, para que un fork no rompa el
-    # pipeline. Alternativa sin secreto: instalar la Vercel GitHub App en la
-    # cuenta dueña del repositorio y dejar que Vercel despliegue por su cuenta.
-    if: ${{ secrets.VERCEL_TOKEN != '' }}
     environment: production
     steps:
       - uses: actions/checkout@v4
@@ -64,7 +60,13 @@ jobs:
         with:
           node-version: '22'
           cache: npm
+      # El contexto `secrets` no se puede usar en un `if` de job, así que el
+      # token se expone como env y la condición se evalúa a nivel de paso.
+      # Sin token el paso se salta y un fork no rompe el pipeline.
+      # Alternativa sin secreto: instalar la Vercel GitHub App en la cuenta
+      # dueña del repositorio y dejar que Vercel despliegue por su cuenta.
       - name: Desplegar a producción
+        if: ${{ env.VERCEL_TOKEN != '' }}
         run: npx vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
